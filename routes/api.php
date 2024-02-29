@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrderTableController;
+use App\Http\Controllers\StatController;
 use App\Http\Controllers\ThemeFamilyController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -24,11 +25,11 @@ function createUser($Request)
 {
 
 }
+
 Route::prefix('/auth')->group(function () {
     Route::post('/register', [UserController::class, 'createUser']);
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/logout', [UserController::class, 'logout']);
-
 
 
     Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
@@ -37,8 +38,9 @@ Route::prefix('/auth')->group(function () {
 });
 
 Route::prefix('/v1')->group(function () {
-  Route::get('/themeFamilies', [ThemeFamilyController::class, 'index']);
-  Route::get('/order-table', [OrderTableController::class, 'index']);
+    Route::get('/themeFamilies', [ThemeFamilyController::class, 'index']);
+    Route::get('/order-table', [OrderTableController::class, 'index']);
+    Route::post('/stats', [StatController::class, 'store']);
 }
 );
 
