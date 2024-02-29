@@ -14,4 +14,6 @@ class PrescriptionReaction extends Model
     {
         return $this->belongsTo(Prescription::class);
     }
+    public $timestamps = false;
+
 }

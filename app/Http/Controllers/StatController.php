@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Stats\StoreStatsItemRequest;
 use App\Models\PrescriptionReaction;
 use App\Models\Stat;
+use App\Enums\EnumChoice as Choice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StatController extends Controller
 {
@@ -43,7 +45,7 @@ class StatController extends Controller
             'patientGender' => 'required|integer',
             'prescriptionReactions' => 'required|array',
             'prescriptionReactions.*.id' => 'required|integer|exists:prescriptions,id', // Check if each id exists in the prescriptions table
-            'prescriptionReactions.*.reaction' => 'required|string',
+            'prescriptionReactions.*.reaction' =>  ['required', 'integer', Rule::in(Choice::cases())],
         ]);
 
         $stat = new Stat();
@@ -57,7 +59,12 @@ class StatController extends Controller
         $stat->patient_age = $data['patientAge'];
         $stat->patient_gender = $data['patientGender'];
         $stat->save();
-
+        foreach ($data['prescriptionReactions'] as $reactionData) {
+            $prescriptionReactions = new PrescriptionReaction();
+            $prescriptionReactions->prescription_id = $reactionData['id'];
+            $prescriptionReactions->choice = $reactionData['reaction'];
+            $prescriptionReactions->save();
+        }
 
         // Assuming you want to return the collection of saved reactions
         return response()->json(['prescriptionReactions' => $data['prescriptionReactions']], 201);
